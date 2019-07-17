@@ -1,10 +1,13 @@
 { "name" : "oauth"
 , "description" : "Library for interacting with OAuth 1.0, 1.0A, 2 and Echo.  Provides simplified client access and allows for construction of more complex apis and OAuth providers."
-, "version" : "0.9.11"
+, "version" : "0.9.11b"
 , "directories" : { "lib" : "./lib" }
 , "main" : "index.js"
 , "author" : "Ciaran Jessup <ciaranj@gmail.com>"
 , "repository" : { "type":"git", "url":"http://github.com/ciaranj/node-oauth.git" }
+, "dependencies": {
+    "request": "^2.79.0"
+  }
 , "devDependencies": {
     "vows": "0.5.x"
   }

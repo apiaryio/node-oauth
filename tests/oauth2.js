@@ -18,8 +18,8 @@ vows.describe('OAuth2').addBatch({
         },
         'we should not include access token in both querystring and headers (favours headers if specified)': function (oa) {
             oa._request = new OAuth2("clientId", "clientSecret")._request.bind(oa);
-            oa._executeRequest= function( http_library, options, post_body, callback) {
-              callback(null, url.parse(options.path, true).query, options.headers);
+            oa._executeRequest= function( options, callback) {
+              callback(null, url.parse(options.uri, true).query, options.headers);
             };
 
             oa._request("GET", "http://foo/", {"Authorization":"Bearer BadNews"}, null, "accessx",  function(error, query, headers) {
@@ -28,14 +28,14 @@ vows.describe('OAuth2').addBatch({
             });
         },
         'we should include access token in the querystring if no Authorization header present to override it': function (oa) {
-           oa._request = new OAuth2("clientId", "clientSecret")._request.bind(oa);
-           oa._executeRequest= function( http_library, options, post_body, callback) {
-             callback(null, url.parse(options.path, true).query, options.headers);
-           };
-           oa._request("GET", "http://foo/", {}, null, "access",  function(error, query, headers) {
-             assert.ok( 'access_token' in query, "access_token not present in query");
-              assert.ok( !('Authorization' in headers), "Authorization in headers");
-            });
+          oa._request = new OAuth2("clientId", "clientSecret")._request.bind(oa);
+          oa._executeRequest= function( options, callback) {
+            callback(null, url.parse(options.path, true).query, options.headers);
+          };
+          oa._request("GET", "http://foo/", {}, null, "access",  function(error, query, headers) {
+            assert.ok( 'access_token' in query, "access_token not present in query");
+            assert.ok( !('Authorization' in headers), "Authorization in headers");
+          });
         },
         'we should correctly extract the token if received as a JSON literal': function (oa) {
           oa._request= function(method, url, headers, post_body, access_token, callback) {
@@ -125,8 +125,8 @@ vows.describe('OAuth2').addBatch({
       topic: new OAuth2("clientId", "clientSecret", undefined, undefined, undefined,
           { 'SomeHeader': '123' }),
       'When GETing': {
-        'we should see the custom headers mixed into headers property in options passed to http-library' : function(oa) {
-          oa._executeRequest= function( http_library, options, callback ) {
+        'we should see the custom headers mixed into headers property in options passed to request' : function(oa) {
+          oa._executeRequest= function( options, callback ) {
             assert.equal(options.headers["SomeHeader"], "123");
           };
           oa.get("", {});
@@ -191,7 +191,7 @@ vows.describe('OAuth2').addBatch({
           { 'User-Agent': '123Agent' }),
       'When calling get': {
         'we should see the User-Agent mixed into headers property in options passed to http-library' : function(oa) {
-          oa._executeRequest= function( http_library, options, callback ) {
+          oa._executeRequest= function( options, callback ) {
             assert.equal(options.headers["User-Agent"], "123Agent");
           };
           oa.get("", {});
@@ -203,7 +203,7 @@ vows.describe('OAuth2').addBatch({
         undefined),
       'When calling get': {
         'we should see the default User-Agent mixed into headers property in options passed to http-library' : function(oa) {
-          oa._executeRequest= function( http_library, options, callback ) {
+          oa._executeRequest= function( options, callback ) {
             assert.equal(options.headers["User-Agent"], "Node-oauth");
             };
           oa.get("", {});
